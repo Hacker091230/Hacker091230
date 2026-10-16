@@ -18,13 +18,22 @@
  */
 
 // ===================================================================
-// LCD: ці три місця (include, об'єкт, ініціалізація в setup()) мають
-// збігатися з прикладом File > Examples > LCD 16x2 I2C > hello_world.
-// Якщо там інші назви, просто скопіюйте їх звідти.
+// LCD. Уся робота з бібліотекою LCD 16x2 I2C зібрана у двох функціях.
+// lcd_set_cursor() і lcd_put() - функції бібліотеки курсу. Назву .h-файлу
+// та функцію ініціалізації звірте з прикладом
+// File > Examples > LCD 16x2 I2C > hello_world і за потреби виправте.
 // ===================================================================
 #include <Wire.h>
-#include <LiquidCrystal_I2C.h>
-LiquidCrystal_I2C lcd(0x27, 16, 2);   // адреса 0x27, 16 символів, 2 рядки
+#include <lcd_16x2_i2c.h>
+
+void lcdInit() {
+  lcd_init();
+}
+
+void lcdPrintAt(uint8_t col, uint8_t row, char *text) {
+  lcd_set_cursor(col, row);
+  lcd_put(text);
+}
 
 // --- Піни ---
 const int TRIG_PIN = 6;       // D6 -> TRIG
@@ -49,11 +58,10 @@ void setup() {
   pinMode(ECHO_PIN, INPUT);
   pinMode(SW0_PIN, INPUT);    // pullup і конденсатор уже є на платі
 
-  lcd.init();                 // ініціалізація LCD (див. hello_world)
-  lcd.backlight();
+  lcdInit();
 
-  lcd.setCursor(0, 0);
-  lcd.print("MIC1 Week 5");
+  char title[] = "MIC1 Week 5";
+  lcdPrintAt(0, 0, title);
 }
 
 void loop() {
@@ -126,6 +134,5 @@ void showBar() {
   }
   line[LCD_COLUMNS] = '\0';                // кінець рядка
 
-  lcd.setCursor(0, 1);
-  lcd.print(line);
+  lcdPrintAt(0, 1, line);
 }
